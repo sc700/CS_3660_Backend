@@ -1,0 +1,241 @@
+{
+    "users": [
+        {
+            "username": "admin@admin",
+            "name": "admin",
+            "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "email": "admin@gmail.com",
+            "items": [
+                {
+                    "id": 1,
+                    "name": "From Backend",
+                    "details": "Here is my description",
+                    "latitude": 40.654321,
+                    "longitude": -111.123456,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 10:30 AM",
+                            "latitude": 40.654321,
+                            "longitude": -111.123456
+                        },
+                        {
+                            "timestamp": "Feb 7, 10:30 AM",
+                            "latitude": 40.654322,
+                            "longitude": -111.123457
+                        },
+                        {
+                            "timestamp": "Feb 6, 10:30 AM",
+                            "latitude": 40.654323,
+                            "longitude": -111.123458
+                        },
+                        {
+                            "timestamp": "Feb 5, 10:30 AM",
+                            "latitude": 40.654324,
+                            "longitude": -111.123459
+                        },
+                        {
+                            "timestamp": "Feb 4, 10:30 AM",
+                            "latitude": 40.654325,
+                            "longitude": -111.12346
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Phone",
+                    "details": "Iphone 16 Pro",
+                    "latitude": 40.123456,
+                    "longitude": -111.654321,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 11:00 AM",
+                            "latitude": 40.123456,
+                            "longitude": -111.654321
+                        },
+                        {
+                            "timestamp": "Feb 7, 11:00 AM",
+                            "latitude": 40.123457,
+                            "longitude": -111.654322
+                        },
+                        {
+                            "timestamp": "Feb 6, 11:00 AM",
+                            "latitude": 40.123458,
+                            "longitude": -111.654323
+                        },
+                        {
+                            "timestamp": "Feb 5, 11:00 AM",
+                            "latitude": 40.123459,
+                            "longitude": -111.654324
+                        },
+                        {
+                            "timestamp": "Feb 4, 11:00 AM",
+                            "latitude": 40.12346,
+                            "longitude": -111.654325
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "Dodge Viper GTS",
+                    "details": "2016 red GTS",
+                    "latitude": 40.2011033,
+                    "longitude": -111.162534,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 12:00 PM",
+                            "latitude": 40.2011033,
+                            "longitude": -111.162534
+                        },
+                        {
+                            "timestamp": "Feb 7, 12:00 PM",
+                            "latitude": 40.2011034,
+                            "longitude": -111.162535
+                        },
+                        {
+                            "timestamp": "Feb 6, 12:00 PM",
+                            "latitude": 40.2011035,
+                            "longitude": -111.162536
+                        },
+                        {
+                            "timestamp": "Feb 5, 12:00 PM",
+                            "latitude": 40.2011036,
+                            "longitude": -111.162537
+                        },
+                        {
+                            "timestamp": "Feb 4, 12:00 PM",
+                            "latitude": 40.2011037,
+                            "longitude": -111.162538
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "username": "user1",
+            "name": "Jennifer Doe",
+            "password_hash": "password123",
+            "email": "jendoe@gmail.com",
+            "items": [
+                {
+                    "id": 4,
+                    "name": "Backpack",
+                    "details": "Nike Backpack",
+                    "latitude": 40.123456,
+                    "longitude": -111.654321,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 09:00 AM",
+                            "latitude": 40.123456,
+                            "longitude": -111.654321
+                        },
+                        {
+                            "timestamp": "Feb 7, 09:00 AM",
+                            "latitude": 40.123457,
+                            "longitude": -111.654322
+                        },
+                        {
+                            "timestamp": "Feb 6, 09:00 AM",
+                            "latitude": 40.123458,
+                            "longitude": -111.654323
+                        },
+                        {
+                            "timestamp": "Feb 5, 09:00 AM",
+                            "latitude": 40.123459,
+                            "longitude": -111.654324
+                        },
+                        {
+                            "timestamp": "Feb 4, 09:00 AM",
+                            "latitude": 40.12346,
+                            "longitude": -111.654325
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "name": "Car",
+                    "details": "blue car",
+                    "latitude": 40.2011033,
+                    "longitude": -111.162534,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 02:00 PM",
+                            "latitude": 40.2011033,
+                            "longitude": -111.162534
+                        },
+                        {
+                            "timestamp": "Feb 7, 02:00 PM",
+                            "latitude": 40.2011034,
+                            "longitude": -111.162535
+                        },
+                        {
+                            "timestamp": "Feb 6, 02:00 PM",
+                            "latitude": 40.2011035,
+                            "longitude": -111.162536
+                        },
+                        {
+                            "timestamp": "Feb 5, 02:00 PM",
+                            "latitude": 40.2011036,
+                            "longitude": -111.162537
+                        },
+                        {
+                            "timestamp": "Feb 4, 02:00 PM",
+                            "latitude": 40.2011037,
+                            "longitude": -111.162538
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "username": "user2",
+            "name": "John Doe",
+            "password_hash": "qwerty",
+            "email": "johndoe@gmail.com",
+            "items": [
+                {
+                    "id": 6,
+                    "name": "Motorcycle",
+                    "details": "Ducato 959 Panigale",
+                    "latitude": 40.2011055,
+                    "longitude": -111.162555,
+                    "history": [
+                        {
+                            "timestamp": "Feb 8, 03:00 PM",
+                            "latitude": 40.2011055,
+                            "longitude": -111.162555
+                        },
+                        {
+                            "timestamp": "Feb 7, 03:00 PM",
+                            "latitude": 40.2011056,
+                            "longitude": -111.162556
+                        },
+                        {
+                            "timestamp": "Feb 6, 03:00 PM",
+                            "latitude": 40.2011057,
+                            "longitude": -111.162557
+                        },
+                        {
+                            "timestamp": "Feb 5, 03:00 PM",
+                            "latitude": 40.2011058,
+                            "longitude": -111.162558
+                        },
+                        {
+                            "timestamp": "Feb 4, 03:00 PM",
+                            "latitude": 40.2011059,
+                            "longitude": -111.162559
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Sam Christmas",
+            "username": "Sam",
+            "email": "schristmas6bt@gmail.com",
+            "password_hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+            "id": 1,
+            "role": "User",
+            "items": []
+        }
+    ]
+}
