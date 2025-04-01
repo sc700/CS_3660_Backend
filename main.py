@@ -8,16 +8,17 @@ from schemas.message_schema import MessageResponse
 app = FastAPI(title="CS3660 Backend Project", version="1.0.0")
 
 app.add_middleware(
-    AuthMiddleware,
-    public_paths=["/", "/home", "/api/login", "/favicon.ico", "/about", "/signup"]
-)
-
-app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origin_regex="http://(localhost|127\\.0\\.0\\.1):\\d+",
+    #allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.add_middleware(
+    AuthMiddleware,
+    public_paths=["/", "/home", "/api/login", "/favicon.ico", "/about", "/signup"]
 )
 
 app.include_router(login_controller.router)
