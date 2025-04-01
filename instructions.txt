@@ -1,0 +1,58 @@
+CS3660 Backend Project Instructions
+
+-Overview
+This is the backend for the CS3660 project
+All data is stored in a local JSON file (users.json) using the repository pattern.
+
+-Requirements
+Python 3.8+
+Virtual environment
+Required Python packages (listed in requirements.txt)
+
+-Setup and Run Locally
+-Clone the Repository:
+git clone https://github.com/sc700/CS_3660_Backend
+cd CS3660_backend
+
+-Create and Activate a Virtual Environment:
+-On Windows (Command Prompt):
+python -m venv .venv
+.venv\Scripts\activate
+
+-Install Dependencies:
+pip install -r requirements.txt
+
+-Run the Backend Server:
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+__________________________________________________________________________________________________________________________________________
+
+
+Features and Use Cases
+
+-User Signup:
+Allow for user signup
+Creates a new user by hashing the password and storing the data in users.json.
+
+-User Login:
+Allows for user login
+Verifies user credentials, returns a JWT token, and sets up authentication for protected endpoints.
+
+-Account Management:
+Allows users to edit account details.
+
+-Item Management:
+Add, Remove, and Edit items
+
+-Location Tracking & History:
+See current item locations and the location history for each item.
+
+-Notes for the Grader
+All data is stored in the local JSON file (database/users.json), you should see it in the repository.
+
+Repository Pattern:
+All data access logic is abstracted into repository modules (repositories/user_repository.py and repositories/items_repository.py).
+
+CORS:
+The backend is configured with CORSMiddleware to allow requests from the frontend.
+You might need to adjust allow_origin_regex or allow_origins in main.py.
