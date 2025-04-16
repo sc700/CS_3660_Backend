@@ -10,8 +10,8 @@ class Item(BaseModel):
 class User(BaseModel):
     username: str
     name: str
-    password_hash: str
-    items: List[Item] = []
+    email: str
+    role: Optional[str] = "User"
 
 class SignUpRequest(BaseModel):
     name: str

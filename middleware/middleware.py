@@ -1,31 +1,33 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+
+from database.db import DatabaseFactory
+from repositories.user_repository import UserRepository
 from services.login_service import LoginService
 
+app = FastAPI()
+
 class AuthMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: FastAPI, public_paths: list = None):
+    def __init__(self, app: FastAPI):
         super().__init__(app)
-        self.public_paths = public_paths or ["/", "/health", "/api/login"]
 
     async def dispatch(self, request: Request, call_next):
-        if any(request.url.path.startswith(path) for path in self.public_paths):
+        PUBLIC_PATHS = {"/", "/health", "/home", "/api/login", "/favicon.ico", "/about", "/signup", "/login"}
+        if request.url.path in PUBLIC_PATHS:
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
             return JSONResponse(
                 status_code=401,
-                content={"detail": "Missing or invalid authorization token"}
-            )
+                content={"detail": "Missing or invalid authorization token"})
 
         token = auth_header.split("Bearer ")[1]
         try:
-            LoginService.verify_token(token)
+            payload = LoginService.verify_token(token)
+            request.state.jwt_payload = payload
         except Exception as e:
-            return JSONResponse(
-                status_code=401,
-                content={"detail": str(e)}
-            )
+            return JSONResponse(status_code=401, content={"detail": str(e)})
 
-        return await call_next(request)
+        return await call_next(request)   

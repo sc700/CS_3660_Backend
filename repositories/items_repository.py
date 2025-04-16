@@ -1,88 +1,44 @@
-import json
-import os
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from fastapi import HTTPException
+from models.items_model import Item
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), '../database', 'users.json')
 
-def load_data():
-    try:
-        with open(DATABASE_PATH, 'r') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        raise HTTPException(status_code=500, detail="Database file not found")
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Error decoding JSON")
+class ItemsRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
-def save_data(data):
-    try:
-        with open(DATABASE_PATH, 'w') as file:
-            json.dump(data, file, indent=4)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    async def get_user_items(self, username: str):
+        result = await self.db.execute(select(Item).where(Item.username == username))
+        return result.scalars().all()
 
-def get_user_items(username: str):
-    data = load_data()
-    user = next((user for user in data.get("users", []) if user.get("username") == username), None)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user.get("items", [])
+    async def add_user_item(self, username: str, item_data: dict):
+        item = Item(username=username, **item_data)
+        self.db.add(item)
+        await self.db.commit()
+        await self.db.refresh(item)
+        return item
 
-def add_user_item(username: str, item: dict):
-    data = load_data()
-    user = next((user for user in data.get("users", []) if user.get("username") == username), None)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    if not item.get("id"):
-        current_ids = [existing_item.get("id", 0) for existing_item in user.get("items", [])]
-        item["id"] = max(current_ids, default=0) + 1
-    else:
-        if any(existing_item.get("id") == item["id"] for existing_item in user.get("items", [])):
-            raise HTTPException(status_code=400, detail="Item ID already exists")
-    
-    user.setdefault("items", []).append(item)
-    save_data(data)
-    return item
+    async def update_user_item(self, username: str, item_id: int, updated_data: dict):
+        result = await self.db.execute(select(Item).where(Item.id == item_id, Item.username == username))
+        item = result.scalar_one_or_none()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
 
-def get_location_history(username: str):
-    data = load_data()
-    user = next((u for u in data.get("users", []) if u.get("username") == username), None)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        for key, value in updated_data.items():
+            if value is not None:
+                setattr(item, key, value)
 
-    history = [item for item in user.get("items", []) if "history" in item]
-    return history
+        await self.db.commit()
+        await self.db.refresh(item)
+        return item
 
-def delete_user_item(username: str, item_id: int):
-    """
-    Delete an item for a specific user by its ID.
-    """
-    data = load_data()
-    user = next((user for user in data.get("users", []) if user.get("username") == username), None)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    items = user.get("items", [])
-    if not any(item.get("id") == item_id for item in items):
-        raise HTTPException(status_code=404, detail="Item not found")
-    
-    user["items"] = [item for item in items if item.get("id") != item_id]
-    save_data(data)
-    return True
+    async def delete_user_item(self, username: str, item_id: int) -> bool:
+        result = await self.db.execute(select(Item).where(Item.id == item_id, Item.username == username))
+        item = result.scalar_one_or_none()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
 
-def update_user_item(username: str, item_id: int, updated_item: dict):
-    data = load_data()
-    user = next((u for u in data.get("users", []) if u.get("username") == username), None)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    items = user.get("items", [])
-    for idx, item in enumerate(items):
-        if item.get("id") == item_id:
-            for key, value in updated_item.items():
-                if value is not None:
-                    items[idx][key] = value
-            save_data(data)
-            return items[idx]
-    
-    raise HTTPException(status_code=404, detail="Item not found")
+        await self.db.delete(item)
+        await self.db.commit()
+        return True
