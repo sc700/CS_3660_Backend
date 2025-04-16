@@ -16,7 +16,7 @@ if config.config_file_name is not None:
 from config import settings
 config.set_main_option(
     "sqlalchemy.url",
-    "postgresql+psycopg2://postgres:xxxxxx@localhost:5432/xxxxxx")
+    "postgresql+asyncpg://postgres:123456789@localhost:5432/cs3660-local")
 
 
 # add your model's MetaData object here

@@ -1,35 +1,36 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from dependency_injector import containers, providers
-import logging
-
-from database.db import get_async_db
+from database.db import AsyncSessionLocal
 from repositories.user_repository import UserRepository
 from repositories.items_repository import ItemsRepository
 from services.login_service import LoginService
 from services.items_api_service import ItemsAPIService
+from database.db import DatabaseFactory
 
-logger = logging.getLogger("cs3660backend")
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(module)s.%(funcName)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+from dependency_injector import containers, providers
+import logging
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=[
             "controllers.login_controller",
             "controllers.items_api_controller",
-            "controllers.locations_controller",
-            "controllers.location_history_controller",
-            "controllers.account_details_controller",
-            "controllers.signup_api_controller",
         ]
     )
 
-    logger = providers.Object(logger)
+    logger = providers.Singleton(logging.getLogger, "cs3660-backend")
+
+    db_factory = providers.Singleton(DatabaseFactory)
 
     user_repository_factory = providers.Factory(
-        lambda db: UserRepository(db)
+        UserRepository,
+        db=db_factory
+    )
+
+    items_repository_factory = providers.Factory(
+        ItemsRepository,
+        db=db_factory
     )
 
     login_service = providers.Factory(
@@ -37,9 +38,7 @@ class Container(containers.DeclarativeContainer):
         user_repository_factory=user_repository_factory
     )
 
-    items_repository = providers.Factory(ItemsRepository)
-
     items_api_service = providers.Factory(
         ItemsAPIService,
-        items_repository=items_repository
+        items_repository=items_repository_factory
     )
