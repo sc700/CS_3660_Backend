@@ -1,4 +1,3 @@
-# --- main.py ---
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,6 +30,8 @@ container.wire(modules=[
 ])
 app.container = container
 
+app.add_middleware(AuthMiddleware)
+
 if settings.app_env == "local":
     app.add_middleware(
         CORSMiddleware,
@@ -40,7 +41,7 @@ if settings.app_env == "local":
         allow_headers=["*"],
     )
 
-app.add_middleware(AuthMiddleware)
+
 if settings.app_env == "prod":
     app.add_middleware(ApiGatewayAuthMiddleware)
 
