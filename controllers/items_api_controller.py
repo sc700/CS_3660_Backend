@@ -1,39 +1,52 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from repositories.items_repository import get_user_items, add_user_item, delete_user_item, update_user_item
+from fastapi import APIRouter, Depends, HTTPException
+from dependency_injector.wiring import Provide, inject
+from sqlalchemy.ext.asyncio import AsyncSession
+from containers import Container
+from services.items_api_service import ItemsAPIService
+from database.db import get_async_db
+from schemas.items_schema import ItemSchema, ItemListResponse, ItemCreateRequest
 
 router = APIRouter(prefix="/api/items", tags=["Items"])
 
-class Item(BaseModel):
-    id: int = None
-    name: str
-    details: str = ""
-    latitude: float
-    longitude: float
+@router.get("/{username}", response_model=ItemListResponse)
+@inject
+async def get_items(
+    username: str,
+    db: AsyncSession = Depends(get_async_db),
+    items_service: ItemsAPIService = Depends(Provide[Container.items_api_service])
+):
+    return await items_service.get_user_items(db, username)
 
-class ItemUpdate(BaseModel):
-    name: str = None
-    description: str = None
+@router.post("/{username}", response_model=ItemSchema)
+@inject
+async def add_item(
+    username: str,
+    item: ItemCreateRequest,
+    db: AsyncSession = Depends(get_async_db),
+    items_service: ItemsAPIService = Depends(Provide[Container.items_api_service])
+):
+    return await items_service.add_user_item(db, username, item.dict())
 
-@router.get("/users/{username}/items")
-async def get_items(username: str):
-    items = get_user_items(username)
-    return {"items": items}
+@router.put("/{username}/{item_id}", response_model=ItemSchema)
+@inject
+async def update_item(
+    username: str,
+    item_id: int,
+    item: ItemCreateRequest,
+    db: AsyncSession = Depends(get_async_db),
+    items_service: ItemsAPIService = Depends(Provide[Container.items_api_service])
+):
+    return await items_service.update_user_item(db, username, item_id, item.dict())
 
-@router.post("/users/{username}/items")
-async def add_item(username: str, item: Item):
-    added_item = add_user_item(username, item.dict())
-    return {"message": "Item added successfully", "item": added_item}
-
-@router.delete("/users/{username}/items/{item_id}")
-async def delete_item(username: str, item_id: int):
-    success = delete_user_item(username, item_id)
-    if success:
-        return {"message": "Item deleted successfully"}
-    else:
-        raise HTTPException(status_code=400, detail="Unable to delete item")
-    
-@router.put("/users/{username}/items/{item_id}")
-async def update_item(username: str, item_id: int, updated_item: ItemUpdate):
-    updated = update_user_item(username, item_id, updated_item.dict(exclude_unset=True))
-    return {"message": "Item updated successfully", "item": updated}
+@router.delete("/{username}/{item_id}")
+@inject
+async def delete_item(
+    username: str,
+    item_id: int,
+    db: AsyncSession = Depends(get_async_db),
+    items_service: ItemsAPIService = Depends(Provide[Container.items_api_service])
+):
+    success = await items_service.delete_user_item(db, username, item_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return {"success": True}

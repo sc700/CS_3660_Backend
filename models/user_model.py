@@ -1,5 +1,11 @@
-class User:
-    def __init__(self, username: str, name: str, password_hash: str):
-        self.username = username
-        self.name = name        
-        self.password_hash = password_hash
+from sqlalchemy import Column, Integer, String, ForeignKey, JSON, Float
+from sqlalchemy.ext.declarative import declarative_base
+from models.base_model import Base
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)

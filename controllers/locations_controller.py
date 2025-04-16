@@ -1,24 +1,30 @@
-from fastapi import APIRouter
-import json
-import os
-from schemas.message_schema import MessageResponse
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from dependency_injector.wiring import inject, Provide
 
-router = APIRouter()
+from containers import Container
+from repositories.items_repository import ItemsRepository
+from database.db import get_async_db
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), '../database', 'users.json')
-
-def load_data():
-    try:
-        with open(DATABASE_PATH, 'r') as file:
-            data = json.load(file)
-        return data
-    except FileNotFoundError:
-        return {"error": "Database file not found"}
-    except json.JSONDecodeError:
-        return {"error": "Error decoding JSON"}
+router = APIRouter(prefix="/api/locations", tags=["Locations"])
 
 @router.get("/users/{username}/items")
-async def get_items(username: str):
-    data = load_data()
-    user = next((user for user in data["users"] if user["username"] == username), None)
-    return {"items": user["items"]}
+@inject
+async def get_user_items_location(
+    username: str,
+    db: AsyncSession = Depends(get_async_db),
+    items_repo: ItemsRepository = Depends(Provide[Container.items_repository])
+):
+    try:
+        items = await items_repo.get_user_items(db, username)
+        return {"items": [
+            {
+                "id": item.id,
+                "name": item.name,
+                "latitude": item.latitude,
+                "longitude": item.longitude
+            }
+            for item in items
+        ]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching items: {str(e)}")
