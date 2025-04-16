@@ -13,7 +13,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next):
-        PUBLIC_PATHS = {"/", "/health", "/home", "/api/login", "/favicon.ico", "/about", "/signup", "/login"}
+        PUBLIC_PATHS = {
+                        "/", "/health", "/home", "/api/login",
+                        "/favicon.ico", "/about", "/signup",
+                        "/login","/docs", "/openapi.json", "/redoc"
+                        }
+
         if request.url.path in PUBLIC_PATHS:
             return await call_next(request)
 
