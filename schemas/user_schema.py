@@ -18,3 +18,11 @@ class SignUpRequest(BaseModel):
     email: str
     password: str
     username: str
+
+class AccountResponse(BaseModel):
+    username: str
+    name: str
+    email: str
+
+    class Config:
+        from_attributes = True 
