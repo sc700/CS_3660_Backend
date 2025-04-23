@@ -1,23 +1,28 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 
 class HistoryEntry(BaseModel):
-    timestamp: str
+    timestamp: datetime
     latitude: float
     longitude: float
+
+    class Config:
+        from_attributes = True
 
 
 class ItemSchema(BaseModel):
     id: int
+    username: str
     name: str
-    details: str
+    details: Optional[str] = None
     latitude: float
     longitude: float
-    history: List[HistoryEntry]
+    #history: List[HistoryEntry] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ItemCreateRequest(BaseModel):

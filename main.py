@@ -84,7 +84,7 @@ def custom_openapi():
         if "properties" in schema:
             for field_name, field in schema["properties"].items():
                 if "anyOf" in field:
-                    field["type"] = "string"  # Replace 'anyOf' with AWS-supported format
+                    field["type"] = "string"
                     field["nullable"] = True
                     del field["anyOf"]
     

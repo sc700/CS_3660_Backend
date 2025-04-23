@@ -9,18 +9,18 @@ router = APIRouter(prefix="/api/login", tags=["Authentication"])
 
 @router.post("", response_model=LoginResponse)
 @inject
-async def login(
+def login(
     login: LoginRequest,
     login_service: LoginService = Depends(Provide[Container.login_service])
 ):
     try:
-        token = await login_service.get_login_token(login.username, login.password)
+        token = login_service.get_login_token(login.username, login.password)
         return LoginResponse(success=True, jwt_token=token)
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.post("/verify", response_model=LoginResponse)
-async def verify(verify_request: VerifyLoginRequest):
+def verify(verify_request: VerifyLoginRequest):
     try:
         _ = LoginService.verify_token(verify_request.jwt_token)
         return LoginResponse(success=True, jwt_token=verify_request.jwt_token)

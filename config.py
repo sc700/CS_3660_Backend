@@ -9,7 +9,7 @@ load_dotenv(override=True)
 
 class Settings(BaseSettings):
     app_env: str
-    allow_origins: list[AnyHttpUrl] 
+    allow_origins: str
     api_gateway_token: str
     secret_key: str
     algorithm: str
@@ -23,13 +23,6 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self) -> str:
-        return (
-            f"postgresql+asyncpg://{self.database_user}:{self.database_password}@"
-            f"{self.database_host}:{self.database_port}/{self.database_name}"
-        )
-
-    @property
-    def sync_database_url(self) -> str:
         return (
             f"postgresql+psycopg2://{self.database_user}:{self.database_password}@"
             f"{self.database_host}:{self.database_port}/{self.database_name}"

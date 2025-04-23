@@ -1,53 +1,56 @@
 import hashlib
 import jwt
 import datetime
-import os
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from models.user_model import User
 from repositories.user_repository import UserRepository
-from dotenv import load_dotenv
+from config import settings
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY", "super-secret")
-ALGORITHM = "HS256"
 
 class LoginService:
-    def __init__(self, user_repository_factory):
-        self.user_repository_factory = user_repository_factory
-
-    async def get_login_token(self, db: AsyncSession, username: str, password: str) -> str:
-        user_repository = self.user_repository_factory(db)
-        user = await user_repository.get_user_by_username(username)
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
 
     @staticmethod
     def verify_token(token: str) -> dict:
         try:
-            return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+            return payload
         except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="Token has expired")
+            raise Exception("Token has expired")
         except jwt.InvalidTokenError:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise Exception("Invalid token")
 
-    async def get_login_token(self, db: AsyncSession, username: str, password: str) -> str:
-        user_repository = self.user_repository_factory(db)
-        user = await user_repository.get_user_by_username(username)
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
+    def get_user(self, username: str) -> User:
+        try:
+            return self.user_repository.get_user_by_username(username)
+        except Exception as e:
+            raise Exception(f"Failed to fetch user roles: {str(e)}")
 
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        if user.password_hash != hashed_password:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+    def get_login_token(self, username: str, password: str) -> str:
+        try:
+            user = self.user_repository.get_user_by_username(username)
+            if not user:
+                raise Exception("User not found")
 
-        payload = {
-            "sub": user.username,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-            "user": {
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+            if user.password_hash != hashed_password:
+                raise Exception("Invalid credentials")
+
+            user_payload = {
                 "username": user.username,
                 "name": user.name,
-                "email": user.email,
-                "role": user.role
             }
-        }
 
-        return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+            expiration_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+
+            token_payload = {
+                "sub": user.username,
+                "exp": expiration_time,
+                "user": user_payload,
+            }
+
+            token = jwt.encode(token_payload, settings.secret_key, algorithm=settings.algorithm)
+            return token
+        except Exception as e:
+            raise Exception(f"Login failed: {str(e)}")

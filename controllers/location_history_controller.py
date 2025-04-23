@@ -6,6 +6,8 @@ from typing import List
 from containers import Container
 from repositories.items_repository import ItemsRepository
 
+#/api/location-history/users/${user.username}
+
 router = APIRouter(prefix="/api/location-history", tags=["LocationHistory"])
 
 class ItemLocation(BaseModel):
@@ -17,15 +19,15 @@ class ItemLocation(BaseModel):
 class ItemLocationResponse(BaseModel):
     items: List[ItemLocation]
 
-@router.get("/users/{username}/items", response_model=ItemLocationResponse)
+
+@router.get("/users/{username}", response_model=ItemLocationResponse)
 @inject
-async def get_user_items_location_history(
+def get_user_items_location_history(
     username: str,
-    items_repository_factory=Depends(Provide[Container.items_repository_factory])
+    items_repository: ItemsRepository = Depends(Provide[Container.items_repository])
 ):
     try:
-        items_repo: ItemsRepository = items_repository_factory()
-        items = await items_repo.get_user_items(username=username)
+        items = items_repository.get_user_items(username=username)
 
         item_list = [
             ItemLocation(
@@ -40,4 +42,4 @@ async def get_user_items_location_history(
         return ItemLocationResponse(items=item_list)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching location history: {str(e)}")    
+        raise HTTPException(status_code=500, detail=f"Error fetching location history: {str(e)}")
