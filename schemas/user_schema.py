@@ -11,7 +11,7 @@ class User(BaseModel):
     username: str
     name: str
     email: str
-    role: Optional[str] = "User"
+    #role: Optional[str] = "User"
 
 class SignUpRequest(BaseModel):
     name: str
@@ -26,3 +26,7 @@ class AccountResponse(BaseModel):
 
     class Config:
         from_attributes = True 
+
+class UpdateAccountSchema(BaseModel):
+    name: str | None = None
+    email: str | None = None

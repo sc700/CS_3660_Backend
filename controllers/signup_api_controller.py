@@ -16,13 +16,12 @@ class SignUpRequest(BaseModel):
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=MessageResponse)
 @inject
-async def signup(
+def signup(
     signup_request: SignUpRequest,
-    user_repository_factory=Depends(Provide[Container.user_repository_factory])
+    user_repository: UserRepository = Depends(Provide[Container.user_repository])
 ):
     try:
-        repo = user_repository_factory()
-        await repo.add_user(signup_request.dict())
+        user_repository.add_user(signup_request.dict())
         return {"message": "User created successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"User creation failed: {e}")

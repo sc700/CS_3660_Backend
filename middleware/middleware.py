@@ -1,4 +1,4 @@
-from fastapi import Request, FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -13,21 +13,15 @@ class AuthMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next):
-        PUBLIC_PATHS = {
-                        "/", "/health", "/home", "/api/login",
-                        "/favicon.ico", "/about", "/signup",
-                        "/login","/docs", "/openapi.json", "/redoc"
-                        }
-
+        PUBLIC_PATHS = ["/api/login", "/api/signup", "/health", "/openapi.json"]
         if request.url.path in PUBLIC_PATHS:
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
-            return JSONResponse(
-                status_code=401,
-                content={"detail": "Missing or invalid authorization token"})
+            return JSONResponse(status_code=401, content={"detail": "missing authorization token"})  # Properly return 401
 
+        
         token = auth_header.split("Bearer ")[1]
         try:
             payload = LoginService.verify_token(token)

@@ -14,7 +14,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 from config import settings
-config.set_main_option("sqlalchemy.url", settings.sync_database_url)
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 
 # add your model's MetaData object here
@@ -28,6 +28,7 @@ from models.user_model import User
 from models.items_model import Item
 from models.base_model import Base
 from models.item_history_model import ItemHistory
+from models.rbac_model import Role, user_roles, RolePermission, Permission
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

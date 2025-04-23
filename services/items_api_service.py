@@ -1,6 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.items_schema import ItemListResponse, ItemSchema
-from repositories.items_repository import ItemsRepository
 from database.db import DatabaseFactory
 
 class ItemsAPIService:
@@ -8,23 +6,23 @@ class ItemsAPIService:
         self.items_repository_factory = items_repository_factory
         self.db_factory = db_factory
 
-    async def get_user_items(self, username: str) -> ItemListResponse:
-        async with self.db_factory.AsyncSessionLocal() as db:
+    def get_user_items(self, username: str) -> ItemListResponse:
+        with self.db_factory.SessionLocal() as db:
             repo = self.items_repository_factory(db)
-            items = await repo.get_user_items(db, username)
-            return ItemListResponse(items=[ItemSchema.from_orm(item) for item in items])
+            items = repo.get_user_items(username)
+            return ItemListResponse(items=[ItemSchema.model_validate(item) for item in items])
 
-    async def add_user_item(self, username: str, item_data: dict) -> ItemSchema:
-        async with self.db_factory.AsyncSessionLocal() as db:
+    def add_user_item(self, username: str, item_data: dict) -> ItemSchema:
+        with self.db_factory.SessionLocal() as db:
             repo = self.items_repository_factory(db)
-            return await repo.add_user_item(db, username, item_data)
+            return repo.add_user_item(username, item_data)
 
-    async def update_user_item(self, username: str, item_id: int, updated_data: dict) -> ItemSchema:
-        async with self.db_factory.AsyncSessionLocal() as db:
+    def update_user_item(self, username: str, item_id: int, updated_data: dict) -> ItemSchema:
+        with self.db_factory.SessionLocal() as db:
             repo = self.items_repository_factory(db)
-            return await repo.update_user_item(db, username, item_id, updated_data)
+            return repo.update_user_item(username, item_id, updated_data)
 
-    async def delete_user_item(self, username: str, item_id: int) -> bool:
-        async with self.db_factory.AsyncSessionLocal() as db:
+    def delete_user_item(self, username: str, item_id: int) -> bool:
+        with self.db_factory.SessionLocal() as db:
             repo = self.items_repository_factory(db)
-            return await repo.delete_user_item(db, username, item_id)
+            return repo.delete_user_item(username, item_id)
