@@ -7,8 +7,10 @@ import hashlib
 
 
 class UserRepository:
+
     def __init__(self, db: DatabaseFactory):
         self.db: Session = db.get_session()
+
 
     def get_user_by_username(self, username: str) -> User:
         result = self.db.execute(select(User).where(User.username == username))
