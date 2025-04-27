@@ -13,11 +13,16 @@ class UserRepository:
 
 
     def get_user_by_username(self, username: str) -> User:
-        result = self.db.execute(select(User).where(User.username == username))
-        user = result.scalars().first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
+        try:
+            result = self.db.execute(select(User).where(User.username == username))
+            user = result.scalars().first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            return user
+        except Exception as e:
+            self.db.rollback()
+            raise Exception(f"Database error: {str(e)}")
+        
 
     def add_user(self, user_data: dict) -> User:
         for field in ["email", "username"]:

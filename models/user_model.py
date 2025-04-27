@@ -7,7 +7,7 @@ from models.rbac_model import RoleEnum, user_roles
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)

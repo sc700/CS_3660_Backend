@@ -17,7 +17,6 @@ class ItemSchema(BaseModel):
     username: str
     name: str
     details: Optional[str] = None
-    latitude: float
     longitude: float
     #history: List[HistoryEntry] = []
 
