@@ -10,12 +10,10 @@ class ApiGatewayAuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: FastAPI):
         super().__init__(app)
 
-    def dispatch(self, request: Request, call_next):      
-        # all calls need api token, this is how we'll prevent random calls to our api
-        # not coming from aws api gateway
+    async def dispatch(self, request: Request, call_next):
         api_token_header = request.headers.get("x-api-token")
         if not api_token_header or api_token_header != settings.api_gateway_token:
-            # if not present or not matching, return 403 forbidden
-            return JSONResponse(status_code=403, content={"detail": "invalid api token"})         
-
-        return call_next(request)
+            return JSONResponse(status_code=403, content={"detail": "invalid api token"})
+        
+        response = await call_next(request)
+        return response

@@ -20,6 +20,8 @@ from schemas.message_schema import MessageResponse
 
 app = FastAPI(title="CS3660 Backend Project", version="1.0.0")
 container = Container()
+app.container = container
+
 container.wire(modules=[
     "controllers.login_controller",
     "controllers.items_api_controller",
@@ -28,7 +30,7 @@ container.wire(modules=[
     "controllers.account_details_controller",
     "controllers.signup_api_controller",
 ])
-app.container = container
+
 
 app.add_middleware(AuthMiddleware)
 
