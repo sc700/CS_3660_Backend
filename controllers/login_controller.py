@@ -16,8 +16,17 @@ def login(
     try:
         token = login_service.get_login_token(login.username, login.password)
         return LoginResponse(success=True, jwt_token=token)
+    
     except Exception as e:
+        if hasattr(login_service, "db_session") and login_service.db_session is not None:
+            login_service.db_session.rollback()
         raise HTTPException(status_code=401, detail=str(e))
+    
+    finally:
+        if hasattr(login_service, "db_session") and login_service.db_session is not None:
+            login_service.db_session.close()
+
+
 
 @router.post("/verify", response_model=LoginResponse)
 def verify(verify_request: VerifyLoginRequest):
